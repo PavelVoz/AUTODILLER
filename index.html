@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Автодилер ВАЗ | Салон Павла , г. Кострома, ул. Свердлова 99 </title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+            <h1>Автодилер ВАЗ</h1>
+            <p> Салон Павла , г. Кострома, ул. Свердлова 99 </p>
+        </header>
+
+        <main>
+            <h2>Выберите автомобиль</h2>
+            <div class="cars">
+                <div class="car">
+                    <h3>Лада Веста</h3>
+                    <img src="images/vesta.jpg" alt="Лада Веста">
+                    <p>Цена: от 600 000 руб.</p>
+                    <button onclick="addToCart('Лада Веста')">Добавить в корзину</button>
+                </div>
+                <div class="car">
+                    <h3>Лада Гранта</h3>
+                    <img src="images/granta.jpg" alt="Лада Гранта">
+                    <p>Цена: от 400 000 руб.</p>
+                    <button onclick="addToCart('Лада Гранта')">Добавить в корзину</button>
+                </div>
+                <div class="car">
+                    <h3>Лада Ларгус</h3>
+                    <img src="images/largus.jpg" alt="Лада Ларгус">
+                    <p>Цена: от 550 000 руб.</p>
+                    <button onclick="addToCart('Лада Ларгус')">Добавить в корзину</button>
+                </div>
+            </div>
+
+            <h2>Конфигуратор</h2>
+            <div class="configurator">
+                <h3>Выберите комплектацию</h3>
+                <form id="configurationForm">
+                    <label for="model">Модель:</label>
+                    <select id="model" onchange="updatePrice()">
+                        <option value="">Выберите модель</option>
+                        <option value="Лада Веста">Лада Веста</option>
+                        <option value="Лада Гранта">Лада Гранта</option>
+                        <option value="Лада Ларгус">Лада Ларгус</option>
+                    </select>
+
+                    <label for="engine">Двигатель:</label>
+                    <select id="engine" onchange="updatePrice()">
+                        <option value="1.6">1.6 л</option>
+                        <option value="1.8">1.8 л</option>
+                        <option value="2.0">2.0 л</option>
+                    </select>
+
+                    <label for="transmission">Коробка передач:</label>
+                    <select id="transmission" onchange="updatePrice()">
+                        <option value="manual">Механическая</option>
+                        <option value="automatic">Автоматическая</option>
+                    </select>
+
+                    <label for="color">Цвет кузова:</label>
+                    <select id="color" onchange="updatePrice()">
+                        <option value="white">Белый</option>
+                        <option value="black">Черный</option>
+                        <option value="red">Красный</option>
+                    </select>
+
+                    <label for="wheels">Колеса:</label>
+                    <select id="wheels" onchange="updatePrice()">
+                        <option value="16">16 дюймов</option>
+                        <option value="17">17 дюймов</option>
+                        <option value="18">18 дюймов</option>
+                    </select>
+
+                    <fieldset>
+                        <legend>Дополнительные опции</legend>
+                        <label>
+                            <input type="checkbox" name="options" value="power_steering" onchange="updatePrice()"> Усилитель руля
+                        </label>
+                        <label>
+                            <input type="checkbox" name="options" value="abs" onchange="updatePrice()"> ABS
+                        </label>
+                    </fieldset>
+
+                    <p>Итоговая стоимость: <span id="totalPrice">0 руб.</span></p>
+                    <button type="button" onclick="saveConfiguration()">Сохранить конфигурацию</button>
+                </form>
+            </div>
+
+            <h2>Корзина</h2>
+            <div id="cart" class="cart">
+                Ваша корзина пуста.
+            </div>
+        </main>
+
+        <footer>
+            <p>© КЭТ 2024 Автодилер ВАЗ. Все права защищены.</p>
+        </footer>
+    </div>
+
+    <script>
+        let cart = [];
+
+        function addToCart(carName) {
+            if (!cart.includes(carName)) {
+                cart.push(carName);
+                updateCart();
+            } else {
+                alert("Этот автомобиль уже добавлен в корзину.");
+            }
+        }
+
+        function updateCart() {
+            const cartElement = document.getElementById('cart');
+            if (cart.length === 0) {
+                cartElement.innerHTML = 'Ваша корзина пуста.';
+            } else {
+                let cartItems = '';
+                cart.forEach(item => {
+                    cartItems += `<p>${item}</p>`;
+                });
+                cartElement.innerHTML = cartItems;
+            }
+        }
+
+        function saveConfiguration() {
+            const model = document.getElementById('model').value;
+            const engine = document.getElementById('engine').value;
+            const transmission = document.getElementById('transmission').value;
+            const color = document.getElementById('color').value;
+            const wheels = document.getElementById('wheels').value;
+            const options = Array.from(document.querySelectorAll('#configurationForm input[type="checkbox"]:checked')).map(cb => cb.value).join(', ');
+            const totalPrice = document.getElementById('totalPrice').innerText;
+
+            if (model !== '') {
+                const configuration = `${model} (${engine}, ${transmission}, ${color}, ${wheels}, опции: ${options}) - ${totalPrice}`;
+                addToCart(configuration);
+            } else {
+                alert('Пожалуйста, выберите модель.');
+            }
+        }
+
+        function updatePrice() {
+            const basePrices = {
+                'Лада Веста': 600000,
+                'Лада Гранта': 400000,
+                'Лада Ларгус': 550000
+            };
+
+            const model = document.getElementById('model').value;
+            let price = basePrices[model];
+
+            // Дополнительные опции
+            const powerSteeringCheckbox = document.querySelector('input[value="power_steering"]');
+            if (powerSteeringCheckbox.checked) {
+                price += 15000;
+            }
+
+            const absCheckbox = document.querySelector('input[value="abs"]');
+            if (absCheckbox.checked) {
+                price += 20000;
+            }
+
+            document.getElementById('totalPrice').innerText = `${price} руб.`;
+        }
+    </script>
+</body>
+</html>
